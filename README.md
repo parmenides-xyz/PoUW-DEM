@@ -1,4 +1,4 @@
-# PoUW-DEM Integration
+# PoUW-DEM Mining
 
 Privacy-preserving, grid-optimizing mining pool for MARA Holdings using Proof of Useful Work (PoUW) and Federated Deep Reinforcement Learning (FDRL).
 
