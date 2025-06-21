@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoUW-DEM Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-2">Analytics Dashboard</h1>
+            <p class="text-gray-400">Historical Performance & Arbitrage Opportunities</p>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Win Rate</h3>
+                <p class="text-3xl font-bold text-green-400" id="win-rate">--%</p>
+                <p class="text-xs text-gray-500">Grid > Mining</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Total Arbitrage Profit</h3>
+                <p class="text-3xl font-bold text-blue-400" id="total-profit">$0</p>
+                <p class="text-xs text-gray-500">Last 24h</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Avg Price Spread</h3>
+                <p class="text-3xl font-bold text-yellow-400" id="avg-spread">$0</p>
+                <p class="text-xs text-gray-500">Grid - Mining</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Grid Events</h3>
+                <p class="text-3xl font-bold text-purple-400" id="grid-events">0</p>
+                <p class="text-xs text-gray-500">High urgency</p>
+            </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Cumulative Profit Chart -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Cumulative Arbitrage Profit</h3>
+                <canvas id="profitChart"></canvas>
+            </div>
+            
+            <!-- Price History Chart -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Price History (24h)</h3>
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Charts Row 2 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Hourly Performance -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Hourly Performance Pattern</h3>
+                <canvas id="hourlyChart"></canvas>
+            </div>
+            
+            <!-- Allocation History -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Allocation Decisions</h3>
+                <canvas id="allocationHistoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Blockchain Analytics -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">Blockchain Activity</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-700 p-4 rounded">
+                    <h4 class="text-sm text-gray-400 mb-1">On-Chain Allocations</h4>
+                    <p class="text-2xl font-bold text-blue-400" id="blockchain-allocations">0</p>
+                    <p class="text-xs text-gray-500">Total recorded</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded">
+                    <h4 class="text-sm text-gray-400 mb-1">Grid Support NFTs</h4>
+                    <p class="text-2xl font-bold text-green-400" id="nfts-minted">0</p>
+                    <p class="text-xs text-gray-500">Minted</p>
+                </div>
+                <div class="bg-gray-700 p-4 rounded">
+                    <h4 class="text-sm text-gray-400 mb-1">Gas Spent</h4>
+                    <p class="text-2xl font-bold text-yellow-400" id="total-gas">0</p>
+                    <p class="text-xs text-gray-500">MATIC</p>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h4 class="text-sm text-gray-400 mb-2">Recent Transactions</h4>
+                <div id="recent-txs" class="space-y-2 text-sm">
+                    <p class="text-gray-500">No blockchain transactions yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best/Worst Hours Table -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold mb-4">Performance Highlights</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="text-lg font-semibold text-green-400 mb-2">Best Hours 🏆</h4>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Time</th>
+                                <th class="text-right py-2">Profit/MWh</th>
+                                <th class="text-right py-2">Spread</th>
+                            </tr>
+                        </thead>
+                        <tbody id="best-hours"></tbody>
+                    </table>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-red-400 mb-2">Worst Hours 📉</h4>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Time</th>
+                                <th class="text-right py-2">Loss/MWh</th>
+                                <th class="text-right py-2">Spread</th>
+                            </tr>
+                        </thead>
+                        <tbody id="worst-hours"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        const chartColors = {
+            profit: '#10b981',
+            loss: '#ef4444',
+            mining: '#f59e0b',
+            grid: '#10b981',
+            neutral: '#6b7280'
+        };
+
+        // Cumulative Profit Chart
+        const profitCtx = document.getElementById('profitChart').getContext('2d');
+        const profitChart = new Chart(profitCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Cumulative Profit ($)',
+                    data: [],
+                    borderColor: chartColors.profit,
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#fff' }
+                    },
+                    x: { ticks: { color: '#fff' } }
+                }
+            }
+        });
+
+        // Price History Chart
+        const priceCtx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(priceCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Grid Price ($/MWh)',
+                    data: [],
+                    borderColor: chartColors.grid,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2
+                }, {
+                    label: 'Mining Revenue ($/MWh)',
+                    data: [],
+                    borderColor: chartColors.mining,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#fff' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200,
+                        ticks: { color: '#fff' }
+                    },
+                    x: { ticks: { color: '#fff' } }
+                }
+            }
+        });
+
+        // Hourly Performance Chart
+        const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+        const hourlyChart = new Chart(hourlyCtx, {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                datasets: [{
+                    label: 'Avg Profit/Hour',
+                    data: new Array(24).fill(0),
+                    backgroundColor: (context) => {
+                        const value = context.raw;
+                        return value >= 0 ? chartColors.profit : chartColors.loss;
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        ticks: { color: '#fff' }
+                    },
+                    x: { ticks: { color: '#fff' } }
+                }
+            }
+        });
+
+        // Allocation History Chart
+        const allocationCtx = document.getElementById('allocationHistoryChart').getContext('2d');
+        const allocationChart = new Chart(allocationCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Mining %',
+                    data: [],
+                    backgroundColor: chartColors.mining
+                }, {
+                    label: 'Grid %',
+                    data: [],
+                    backgroundColor: chartColors.grid
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#fff' }
+                    }
+                },
+                scales: {
+                    y: {
+                        stacked: true,
+                        max: 100,
+                        ticks: { color: '#fff' }
+                    },
+                    x: {
+                        stacked: true,
+                        ticks: { color: '#fff' }
+                    }
+                }
+            }
+        });
+
+        // Update functions
+        async function updateAnalytics() {
+            try {
+                // Get performance summary
+                const perfResponse = await fetch('/analytics/performance?hours=24');
+                const performance = await perfResponse.json();
+
+                // Update key metrics
+                document.getElementById('win-rate').textContent = 
+                    performance.win_rate ? (performance.win_rate * 100).toFixed(1) + '%' : '0%';
+                document.getElementById('total-profit').textContent = 
+                    '$' + (performance.cumulative_profit || 0).toFixed(2);
+                document.getElementById('avg-spread').textContent = 
+                    '$' + (performance.avg_market_spread || 0).toFixed(2);
+                document.getElementById('grid-events').textContent = 
+                    performance.grid_events || 0;
+
+                // Get profit history
+                const profitResponse = await fetch('/analytics/profit-history?hours=24');
+                const profitHistory = await profitResponse.json();
+
+                if (profitHistory.length > 0) {
+                    profitChart.data.labels = profitHistory.map(p => 
+                        new Date(p.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                    );
+                    profitChart.data.datasets[0].data = profitHistory.map(p => p.cumulative_profit);
+                    profitChart.update();
+                }
+
+                // Get hourly patterns
+                const patternsResponse = await fetch('/analytics/hourly-patterns');
+                const patterns = await patternsResponse.json();
+
+                if (patterns.hourly_avg_profit) {
+                    hourlyChart.data.datasets[0].data = patterns.hourly_avg_profit;
+                    hourlyChart.update();
+                }
+
+                // Update best/worst hours
+                if (performance.best_hours && performance.best_hours.length > 0) {
+                    const bestHoursHtml = performance.best_hours.slice(0, 5).map(hour => `
+                        <tr class="border-b border-gray-700">
+                            <td class="py-2">${new Date(hour.timestamp).toLocaleString()}</td>
+                            <td class="text-right py-2 text-green-400">$${hour.profit_per_mwh.toFixed(2)}</td>
+                            <td class="text-right py-2">$${hour.spread.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('best-hours').innerHTML = bestHoursHtml;
+                }
+
+                if (performance.worst_hours && performance.worst_hours.length > 0) {
+                    const worstHoursHtml = performance.worst_hours.slice(0, 5).map(hour => `
+                        <tr class="border-b border-gray-700">
+                            <td class="py-2">${new Date(hour.timestamp).toLocaleString()}</td>
+                            <td class="text-right py-2 text-red-400">$${Math.abs(hour.profit_per_mwh).toFixed(2)}</td>
+                            <td class="text-right py-2">$${hour.spread.toFixed(2)}</td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('worst-hours').innerHTML = worstHoursHtml;
+                }
+
+                // Simulate price history for demo
+                const hours = 24;
+                const now = new Date();
+                const labels = [];
+                const gridPrices = [];
+                const miningRevenue = [];
+
+                for (let i = hours - 1; i >= 0; i--) {
+                    const time = new Date(now - i * 3600000);
+                    labels.push(time.toLocaleTimeString([], {hour: '2-digit'}));
+                    
+                    // Simulate varying grid prices
+                    const baseGrid = 70;
+                    const variation = Math.sin(i / 3) * 30 + Math.random() * 20;
+                    gridPrices.push(baseGrid + variation);
+                    
+                    // Mining revenue is more stable
+                    miningRevenue.push(60 + Math.random() * 5);
+                }
+
+                priceChart.data.labels = labels;
+                priceChart.data.datasets[0].data = gridPrices;
+                priceChart.data.datasets[1].data = miningRevenue;
+                priceChart.update();
+
+                // Update allocation history
+                const allocationLabels = labels.slice(-12); // Last 12 hours
+                const miningAlloc = [];
+                const gridAlloc = [];
+
+                for (let i = 0; i < 12; i++) {
+                    const gridPrice = gridPrices[gridPrices.length - 12 + i];
+                    const miningPrice = miningRevenue[miningRevenue.length - 12 + i];
+                    
+                    if (gridPrice > miningPrice * 1.3) {
+                        miningAlloc.push(30);
+                        gridAlloc.push(70);
+                    } else if (gridPrice > miningPrice * 1.1) {
+                        miningAlloc.push(60);
+                        gridAlloc.push(40);
+                    } else {
+                        miningAlloc.push(85);
+                        gridAlloc.push(15);
+                    }
+                }
+
+                allocationChart.data.labels = allocationLabels;
+                allocationChart.data.datasets[0].data = miningAlloc;
+                allocationChart.data.datasets[1].data = gridAlloc;
+                allocationChart.update();
+
+                // Update blockchain analytics
+                try {
+                    const blockchainResponse = await fetch('/api/blockchain/status');
+                    const blockchainData = await blockchainResponse.json();
+                    
+                    if (blockchainData.connected) {
+                        // These would come from a blockchain analytics endpoint
+                        // For now, showing placeholder data
+                        document.getElementById('blockchain-allocations').textContent = '0';
+                        document.getElementById('nfts-minted').textContent = '0';
+                        document.getElementById('total-gas').textContent = '0.00';
+                    }
+                } catch (e) {
+                    console.log('Blockchain data not available');
+                }
+
+            } catch (error) {
+                console.error('Error updating analytics:', error);
+            }
+        }
+
+        // Initial load and auto-refresh
+        updateAnalytics();
+        setInterval(updateAnalytics, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Models and data
+*.h5
+*.pth
+*.pt
+*.pkl
+*.csv
+*.json
+!deployment_*.json
+!requirements.json
+
+# Logs
+*.log
+logs/
+*.db
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation
+docs/_build/
+site/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Node (for any frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

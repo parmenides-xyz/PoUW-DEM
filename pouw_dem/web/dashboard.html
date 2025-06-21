@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PoUW-DEM Mining Pool Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .facility { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .metric { display: inline-block; margin: 10px 20px; }
+        .metric-value { font-size: 24px; font-weight: bold; color: #2563eb; }
+        .metric-label { color: #666; }
+        .status { padding: 5px 10px; border-radius: 4px; }
+        .status.active { background: #10b981; color: white; }
+        .status.idle { background: #fbbf24; color: white; }
+        h1 { color: #1f2937; }
+        h2 { color: #374151; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏭 MARA Holdings - PoUW Mining Pool</h1>
+        <div id="status"></div>
+        <div id="facilities"></div>
+        <div id="contracts"></div>
+    </div>
+    
+    <script>
+        async function updateDashboard() {
+            try {
+                const response = await fetch('http://localhost:5000/status');
+                const data = await response.json();
+                
+                // Update status
+                document.getElementById('status').innerHTML = `
+                    <p>Last Updated: ${new Date(data.timestamp).toLocaleString()}</p>
+                `;
+                
+                // Update facilities
+                let facilitiesHtml = '<h2>Mining Facilities</h2>';
+                for (const [name, info] of Object.entries(data.facilities)) {
+                    facilitiesHtml += `
+                        <div class="facility">
+                            <h3>${name}</h3>
+                            <div class="metric">
+                                <div class="metric-value">${info.capacity_mw} MW</div>
+                                <div class="metric-label">Capacity</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${info.grid_support_rate.toFixed(1)}%</div>
+                                <div class="metric-label">Grid Support</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">$${info.final_reward.toFixed(2)}</div>
+                                <div class="metric-label">Avg Reward/Hour</div>
+                            </div>
+                            <div class="metric">
+                                <span class="status active">ACTIVE</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                document.getElementById('facilities').innerHTML = facilitiesHtml;
+                
+                // Update contracts
+                let contractsHtml = '<h2>Smart Contracts (Polygon Mainnet)</h2><ul>';
+                for (const [name, address] of Object.entries(data.contracts)) {
+                    if (address && typeof address === 'string') {
+                        contractsHtml += `<li>${name}: <code>${address}</code></li>`;
+                    }
+                }
+                contractsHtml += '</ul>';
+                document.getElementById('contracts').innerHTML = contractsHtml;
+                
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+            }
+        }
+        
+        // Update every 5 seconds
+        updateDashboard();
+        setInterval(updateDashboard, 5000);
+    </script>
+</body>
+</html>

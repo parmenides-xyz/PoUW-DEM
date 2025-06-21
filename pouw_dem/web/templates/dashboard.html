@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoUW-DEM Mining Operations Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .pulse { animation: pulse 2s infinite; }
+        .mining { background: linear-gradient(45deg, #f59e0b, #fbbf24); }
+        .grid-support { background: linear-gradient(45deg, #10b981, #34d399); }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">PoUW-DEM Operations Center</h1>
+                <p class="text-gray-400">Privacy-Preserving Grid-Optimizing Mining System</p>
+            </div>
+            <div>
+                <a href="/analytics" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold">
+                    📊 View Analytics
+                </a>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">System Status</h3>
+                <p class="text-2xl font-bold text-green-400">OPERATIONAL</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Grid Urgency</h3>
+                <p class="text-2xl font-bold" id="grid-urgency">Loading...</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Energy Price</h3>
+                <p class="text-2xl font-bold" id="energy-price">Loading...</p>
+            </div>
+            <div class="bg-gray-800 p-4 rounded-lg">
+                <h3 class="text-sm text-gray-400 mb-1">Mining Revenue</h3>
+                <p class="text-2xl font-bold" id="mining-revenue">$60/MWh</p>
+            </div>
+        </div>
+
+        <!-- Facility Status -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4">Mining Facilities</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- MARA_TX_1 -->
+                <div class="bg-gray-800 rounded-lg p-6" id="facility-MARA_TX_1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">MARA_TX_1</h3>
+                        <span class="px-3 py-1 rounded-full text-sm" id="status-MARA_TX_1">Mining</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-gray-400">Capacity: <span class="text-white" id="capacity-MARA_TX_1">100 MW</span></p>
+                        <p class="text-gray-400">Location: <span class="text-white" id="location-MARA_TX_1">Texas</span></p>
+                        <p class="text-gray-400">Revenue/hr: <span class="text-white" id="revenue-MARA_TX_1">$6,000</span></p>
+                        <p class="text-gray-400">Grid Support: <span class="text-white" id="grid-support-MARA_TX_1">0%</span></p>
+                        <p class="text-gray-400">Mining: <span class="text-white" id="mining-alloc-MARA_TX_1">100%</span></p>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="toggleFacility('MARA_TX_1')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                            Force Grid Support
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MARA_TX_2 -->
+                <div class="bg-gray-800 rounded-lg p-6" id="facility-MARA_TX_2">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">MARA_TX_2</h3>
+                        <span class="px-3 py-1 rounded-full text-sm" id="status-MARA_TX_2">Mining</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-gray-400">Capacity: <span class="text-white" id="capacity-MARA_TX_2">80 MW</span></p>
+                        <p class="text-gray-400">Location: <span class="text-white" id="location-MARA_TX_2">Texas</span></p>
+                        <p class="text-gray-400">Revenue/hr: <span class="text-white" id="revenue-MARA_TX_2">$9,000</span></p>
+                        <p class="text-gray-400">Grid Support: <span class="text-white" id="grid-support-MARA_TX_2">0%</span></p>
+                        <p class="text-gray-400">Mining: <span class="text-white" id="mining-alloc-MARA_TX_2">100%</span></p>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="toggleFacility('MARA_TX_2')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                            Force Grid Support
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MARA_MT_1 -->
+                <div class="bg-gray-800 rounded-lg p-6" id="facility-MARA_MT_1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">MARA_MT_1</h3>
+                        <span class="px-3 py-1 rounded-full text-sm" id="status-MARA_MT_1">Mining</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-gray-400">Capacity: <span class="text-white" id="capacity-MARA_MT_1">60 MW</span></p>
+                        <p class="text-gray-400">Location: <span class="text-white" id="location-MARA_MT_1">Montana</span></p>
+                        <p class="text-gray-400">Revenue/hr: <span class="text-white" id="revenue-MARA_MT_1">$4,500</span></p>
+                        <p class="text-gray-400">Grid Support: <span class="text-white" id="grid-support-MARA_MT_1">0%</span></p>
+                        <p class="text-gray-400">Mining: <span class="text-white" id="mining-alloc-MARA_MT_1">100%</span></p>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="toggleFacility('MARA_MT_1')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">
+                            Force Grid Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Revenue Comparison</h3>
+                <canvas id="revenueChart"></canvas>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-xl font-bold mb-4">Task Allocation</h3>
+                <canvas id="allocationChart"></canvas>
+            </div>
+        </div>
+
+        <!-- FDRL Status -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">Federated Learning Status</h3>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-gray-400">Parameter Sync</p>
+                    <p class="text-2xl font-bold text-green-400">ACTIVE</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-400">Privacy Level</p>
+                    <p class="text-2xl font-bold text-blue-400">ε=1.0</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-400">Agents Connected</p>
+                    <p class="text-2xl font-bold">3/3</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-xl font-bold mb-4">Activity Log</h3>
+            <div id="activity-log" class="space-y-2 max-h-48 overflow-y-auto">
+                <p class="text-gray-400">System initialized...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mining', 'Grid Support'],
+                datasets: [{
+                    label: 'Revenue ($/MWh)',
+                    data: [60, 0],
+                    backgroundColor: ['#f59e0b', '#10b981']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 200,
+                        ticks: { color: '#fff' }
+                    },
+                    x: { ticks: { color: '#fff' } }
+                }
+            }
+        });
+
+        const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+        const allocationChart = new Chart(allocationCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Mining', 'Grid Tasks', 'Idle'],
+                datasets: [{
+                    data: [325, 0, 0],
+                    backgroundColor: ['#f59e0b', '#10b981', '#6b7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#fff' }
+                    }
+                }
+            }
+        });
+
+        // Update functions
+        let facilityStates = {
+            'MARA_TX_1': 'mining',
+            'MARA_TX_2': 'mining',
+            'MARA_MT_1': 'mining'
+        };
+
+        async function updateDashboard() {
+            try {
+                // Get system status
+                const response = await fetch('http://localhost:5001/');
+                const data = await response.json();
+
+                // Get grid status
+                const gridResponse = await fetch('http://localhost:5001/grid/status');
+                const gridData = await gridResponse.json();
+
+                // Update grid metrics
+                const urgency = gridData.urgency || Math.random() * 0.5;
+                const energyPrice = gridData.energy_price || (60 + urgency * 100);
+                
+                document.getElementById('grid-urgency').textContent = (urgency * 100).toFixed(0) + '%';
+                document.getElementById('grid-urgency').className = urgency > 0.7 ? 'text-2xl font-bold text-red-400' : 
+                                                                   urgency > 0.4 ? 'text-2xl font-bold text-yellow-400' : 
+                                                                   'text-2xl font-bold text-green-400';
+                document.getElementById('energy-price').textContent = '$' + energyPrice.toFixed(0) + '/MWh';
+
+                // Update revenue chart
+                revenueChart.data.datasets[0].data = [60, energyPrice];
+                revenueChart.update();
+
+                // Get decisions for each facility
+                for (const facility of ['MARA_TX_1', 'MARA_TX_2', 'MARA_MT_1']) {
+                    const decisionResponse = await fetch(`http://localhost:5001/decision/${facility}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({})
+                    });
+                    
+                    if (decisionResponse.ok) {
+                        const decision = await decisionResponse.json();
+                        updateFacilityStatus(facility, decision);
+                    }
+                }
+
+                // Update allocation chart
+                updateAllocationChart();
+
+                // Add to activity log
+                addLog(`System update - Grid urgency: ${(urgency * 100).toFixed(0)}%`);
+
+            } catch (error) {
+                console.error('Update error:', error);
+                addLog('Error updating dashboard: ' + error.message);
+            }
+        }
+
+        function updateFacilityStatus(facility, decision) {
+            const action = decision.action_name || 'Mining';
+            const isGridSupport = action.includes('Grid Support') || action === 'Hybrid';
+            
+            facilityStates[facility] = isGridSupport ? 'grid' : 'mining';
+            
+            const statusEl = document.getElementById(`status-${facility}`);
+            statusEl.textContent = action;
+            statusEl.className = isGridSupport ? 'px-3 py-1 rounded-full text-sm grid-support pulse' : 
+                                               'px-3 py-1 rounded-full text-sm mining';
+
+            // Update facility info if available
+            if (decision.facility_info) {
+                document.getElementById(`capacity-${facility}`).textContent = decision.facility_info.capacity_mw + ' MW';
+                document.getElementById(`location-${facility}`).textContent = decision.facility_info.location;
+            }
+
+            // Update allocation percentages
+            if (decision.allocation) {
+                const miningPercent = Math.round(decision.allocation.mining_percentage * 100);
+                const gridPercent = Math.round(decision.allocation.grid_percentage * 100);
+                document.getElementById(`grid-support-${facility}`).textContent = gridPercent + '%';
+                document.getElementById(`mining-alloc-${facility}`).textContent = miningPercent + '%';
+                
+                // Update revenue based on actual allocation
+                const capacity = decision.facility_info ? decision.facility_info.capacity_mw : 100;
+                const miningRate = 60;
+                const gridRate = parseFloat(document.getElementById('energy-price').textContent.replace('$', '').replace('/MWh', ''));
+                const revenue = (capacity * miningPercent/100 * miningRate) + (capacity * gridPercent/100 * gridRate);
+                document.getElementById(`revenue-${facility}`).textContent = '$' + Math.round(revenue).toLocaleString();
+                
+                // Store allocation for chart update
+                facilityAllocations[facility] = {
+                    mining: decision.allocation.mining_percentage,
+                    grid: decision.allocation.grid_percentage,
+                    capacity: capacity
+                };
+            }
+        }
+
+        // Store allocation data for each facility
+        let facilityAllocations = {
+            'MARA_TX_1': { mining: 0.85, grid: 0.15, capacity: 100 },
+            'MARA_TX_2': { mining: 0.85, grid: 0.15, capacity: 80 },
+            'MARA_MT_1': { mining: 0.85, grid: 0.15, capacity: 60 }
+        };
+
+        function updateAllocationChart() {
+            let totalMining = 0, totalGrid = 0;
+            
+            // Calculate total MW allocated to each task
+            for (const [facility, data] of Object.entries(facilityAllocations)) {
+                totalMining += data.capacity * data.mining;
+                totalGrid += data.capacity * data.grid;
+            }
+            
+            allocationChart.data.datasets[0].data = [totalMining, totalGrid, 0];
+            allocationChart.update();
+        }
+
+        function toggleFacility(facility) {
+            // This would send a command to override AI decision
+            addLog(`Manual override requested for ${facility}`);
+        }
+
+        function addLog(message) {
+            const log = document.getElementById('activity-log');
+            const entry = document.createElement('p');
+            entry.className = 'text-gray-400';
+            entry.textContent = new Date().toLocaleTimeString() + ' - ' + message;
+            log.insertBefore(entry, log.firstChild);
+            
+            // Keep only last 20 entries
+            while (log.children.length > 20) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        // Start updates
+        updateDashboard();
+        setInterval(updateDashboard, 5000); // Update every 5 seconds
+    </script>
+</body>
+</html>

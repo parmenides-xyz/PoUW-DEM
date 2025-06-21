@@ -1,0 +1,39 @@
+# Core dependencies
+torch>=2.0.0
+numpy>=1.24.0
+pandas>=2.0.0
+scipy>=1.7.0
+
+# Web framework
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Blockchain
+web3>=6.0.0
+cryptography>=3.4.8
+
+# APIs and networking
+requests>=2.31.0
+urllib3>=2.0.0
+aiohttp>=3.8.0
+
+# Environment and config
+python-dotenv>=1.0.0
+
+# Data visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Data storage
+h5py>=3.8.0
+sqlalchemy>=2.0.0
+
+# Grid simulation
+oct2py>=5.6.0
+mosaik>=3.0.0
+
+# RL dependencies
+gym>=0.18.0
+
+# Development tools
+pytest>=7.4.0
