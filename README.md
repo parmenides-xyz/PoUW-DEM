@@ -6,8 +6,8 @@ Privacy-preserving, grid-optimizing mining pool for MARA Holdings using Proof of
 
 This system dynamically allocates computational resources between Bitcoin mining and grid optimization tasks based on profitability and grid needs. Key features:
 
-- **Federated Learning**: Privacy-preserving multi-agent coordination
-- **Dynamic Task Scheduling**: Real-time switching between mining and grid tasks
+- **Federated Learning**: Privacy-preserving multi-agent coordination—FDRL agents train collaboratively without sharing sensitive mining/grid data
+- **Dynamic Task Scheduling**: Real-time switching between mining and grid tasks (simulations, forecasts) that directly support energy infrastructure
 - **Grid Integration**: Connected to ERCOT for real-time grid data
 - **Blockchain Recording**: Allocation decisions recorded on Polygon
 - **Smart Contracts**: Deployed contracts for coordination and rewards
@@ -80,7 +80,3 @@ python -m pouw_dem.deployment.run_full_system
 - `GET /api/metrics` - Performance metrics
 - `GET /api/agent-status` - Agent training status
 - `POST /api/retrain` - Trigger agent retraining
-
-## License
-
-Proprietary - MARA Holdings
