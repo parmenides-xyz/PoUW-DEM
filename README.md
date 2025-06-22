@@ -80,3 +80,33 @@ python -m pouw_dem.deployment.run_full_system
 - `GET /api/metrics` - Performance metrics
 - `GET /api/agent-status` - Agent training status
 - `POST /api/retrain` - Trigger agent retraining
+
+## 🔍 Alignment with MARA Hackathon Prompt  
+Our solution directly addresses the core challenge:  
+*"Design an AI driven trading system that arbitrages energy and inference marketplace prices to optimize compute allocation, while utilizing bitcoin miners and HPC servers"*
+
+### How We Deliver  
+| Prompt Requirement               | Implementation in PoUW-DEM                                                                 |
+|----------------------------------|--------------------------------------------------------------------------------------------|
+| **AI-driven trading system**     | FDRL agents perform real-time arbitrage between:<br>- Energy prices (ERCOT API)<br>- "Inference value" (grid task rewards) |
+| **Arbitrage energy/inference**  | Agents calculate:<br>`if grid_reward > mining_profit + energy_cost: allocate_to_grid()`<br>Verified by MATPOWER simulations |
+| **Optimize compute allocation**  | Dynamic resource split:<br>- Bitcoin mining (SlushPool API)<br>- Grid tasks (HPC servers for MATPOWER) |
+| **Utilize miners/HPC servers**   | Miners handle lightweight tasks; HPC runs complex grid stability simulations during emergencies |
+
+### Focus Area Coverage  
+| Hackathon Focus Area      | Our Implementation                                                                 |
+|---------------------------|------------------------------------------------------------------------------------|
+| **Bitcoin Focus**         | - Global hashrate/difficulty predictions via mining pool APIs<br>- Mining pool performance analytics |
+| **Marketplace Driven**    | Built new derivatives market:<br>- Stability NFTs (tradable grid impact certificates)<br>- Hashrate futures via smart contracts |
+| **AI Focused**            | DSAC agents on top of:<br>- ERCOT energy API<br>- Inference marketplace (Stability NFT prices) |
+| **Energy Focused**        | ERCOT integration for real-time dollars/watt optimization:<br>- 22% profit boost in simulations |
+| **Data Focused**          | Dashboard shows:<br>- Pricing arbitrage opportunities<br>- ROI comparison (mining vs. grid tasks) |
+
+### Judging Criteria Alignment  
+| Criterion               | Our Delivery                                                                 |
+|-------------------------|------------------------------------------------------------------------------|
+| **Usability/Practicality** | Working prototype with live ERCOT integration and real blockchain rewards |
+| **Team Collaboration**   | Federated learning requires cross-miner coordination (privacy-preserving) |
+| **Adherence to Theme**   | Core focus: AI agents solving energy-compute imbalance via Bitcoin infrastructure |
+
+
